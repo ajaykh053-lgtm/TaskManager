@@ -6,6 +6,7 @@ Task — Lists all newly added to-do items
 In Progress — Tracks tasks currently being worked on
 Done — Marks completed tasks
 ```
+
 # ✨ Features
 
 Add new tasks instantly using the Add Task form
@@ -14,9 +15,11 @@ Clean, minimal UI with no backend or login required
 Fully responsive — works on both desktop and mobile browsers
 
 # 🛠️ Tech Stack
+
 HTML — Page structure
 CSS — Styling and layout
 JavaScript — Dynamic task creation and state management
 
 # 🚀 Live Demo
+
 https://ajaykh053-lgtm.github.io/TaskManager/
