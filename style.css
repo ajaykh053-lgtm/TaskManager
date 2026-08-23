@@ -58,6 +58,9 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: static;
+  top: 0;
+  background-position-x: var(--bg-color);
 }
 nav button {
   background-color: var(--bg-button-color);
@@ -79,6 +82,7 @@ section .task-colunm {
   background-color: var(--bg-button-color);
   border-radius: var(--border-l);
   flex-grow: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: var(--padding-s);

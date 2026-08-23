@@ -1,38 +1,64 @@
+let tasksData = {};
+
 const todo = document.querySelector("#todo");
 const progress = document.querySelector("#progress");
 const done = document.querySelector("#done");
-const addTaskButton = document.querySelector("#add-new-task");
 const colunms = [todo, progress, done];
-let tasksData = {};
 let Dragelement = null;
+
+function addTask(title, desc, colunm) {
+  const div = document.createElement("div");
+  div.classList.add("task");
+  div.setAttribute("draggable", "true");
+  div.innerHTML = `
+      <h2>${title}</h2>
+      <p>${desc}</p>
+      <button>Delete</button>
+      `;
+  colunm.appendChild(div);
+  div.addEventListener("drag", (e) => {
+    Dragelement = div;
+  });
+  const deleteButton = div.querySelector("button");
+    deleteButton.addEventListener("click", () => {
+      div.remove();
+      UpdateTaskCount();
+    });
+  return div;
+}
+
+function UpdateTaskCount() {
+  colunms.forEach((colu) => {
+    const tasks = colu.querySelectorAll(".task");
+    const count = colu.querySelector(".right");
+
+    tasksData[colu.id] = Array.from(tasks).map((t) => {
+      return {
+        title: t.querySelector("h2").innerText,
+        desc: t.querySelector("p").innerText,
+      };
+    });
+    // console.log(tasksData)
+    localStorage.setItem("tasks", JSON.stringify(tasksData));
+    count.innerHTML = tasks.length;
+  });
+}
 
 if (localStorage.getItem("tasks")) {
   const data = JSON.parse(localStorage.getItem("tasks"));
   for (const col in data) {
     const column = document.querySelector(`#${col}`);
-    data[col].forEach(task => {
-      const div = document.createElement("div");
-
-      div.classList.add("task");
-      div.setAttribute("draggable", "true");
-      div.innerHTML = `
-        <h2>${task.title}</h2>
-        <p>${task.desc}</p>
-        <button>Delete</button>
-        `;
-      column.appendChild(div);
-      div.addEventListener("drag", (e) => {
-        Dragelement = div;
-      });
+    data[col].forEach((task) => {
+      addTask(task.title, task.desc, column);
     });
   }
+  UpdateTaskCount();
 }
 
 const tasks = document.querySelectorAll(".task");
-console.log(tasks);
+// console.log(tasks);
 tasks.forEach((task) => {
   task.addEventListener("drag", (e) => {
-    // console.log("dragging", e)
     Dragelement = task;
   });
 });
@@ -51,21 +77,8 @@ function addDragEventOnColunm(colunm) {
   colunm.addEventListener("drop", (e) => {
     e.preventDefault();
     colunm.appendChild(Dragelement);
-    colunms.forEach((colu) => {
-      const tasks = colu.querySelectorAll(".task");
-      const count = colu.querySelector(".right");
-      
-      tasksData[colu.id] = Array.from(tasks).map((t) => {
-        return {
-          title: t.querySelector("h2").innerText,
-          desc: t.querySelector("p").innerText,
-        };
-      });
-      // console.log(tasksData)
-      localStorage.setItem("tasks", JSON.stringify(tasksData));
-      count.innerHTML = tasks.length;
-    });
     colunm.classList.remove("hover-over");
+    UpdateTaskCount();
   });
 }
 addDragEventOnColunm(todo);
@@ -76,6 +89,7 @@ addDragEventOnColunm(done);
 const ToggleModalButton = document.querySelector("#toggle-modal");
 const modalbg = document.querySelector(".modal .bg");
 const modal = document.querySelector(".modal");
+const addTaskButton = document.querySelector("#add-new-task");
 
 ToggleModalButton.addEventListener("click", () => {
   modal.classList.toggle("active");
@@ -86,33 +100,11 @@ modalbg.addEventListener("click", () => {
 addTaskButton.addEventListener("click", () => {
   const taskTitle = document.querySelector("#task-title-input").value;
   const taskDescription = document.querySelector("#task-desc-input").value;
-  const div = document.createElement("div");
-  div.setAttribute("draggable", "true");
-  div.setAttribute("class", "task");
-  div.innerHTML = `
-        <h2>${taskTitle}</h2>
-        <p>${taskDescription}</p>
-        <button>Delete</button>
-    `;
-  todo.appendChild(div);
 
-  colunms.forEach((colu) => {
-    const tasks = colu.querySelectorAll(".task");
-    const count = colu.querySelector(".right");
-
-    tasksData[colu.id] = Array.from(tasks).map((t) => {
-      return {
-        title: t.querySelector("h2").innerText,
-        desc: t.querySelector("p").innerText,
-      };
-    });
-    // console.log(tasksData)
-    localStorage.setItem("tasks", JSON.stringify(tasksData));
-    count.innerHTML = tasks.length;
-  });
-  div.addEventListener("drag", (e) => {
-    Dragelement = div;
-  });
+  addTask(taskTitle, taskDescription, todo);
+  UpdateTaskCount();
   modal.classList.remove("active");
+  document.querySelector("#task-title-input").value="";
+  document.querySelector("#task-desc-input").value="";
 });
 // Modal related logic
